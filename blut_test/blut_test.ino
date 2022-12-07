@@ -54,19 +54,16 @@ void loop() {
       
   }
   
-        
-//for(int l = 0; l < arr3index; l++){
-//    Serial.print(arr3[l][0]);
-//      Serial.println(arr3[l][1]);
-//  }
-if (ListIndex % 2 != 0){
-       for(int k = 0; k < ListIndex; k++){
-          if (k % 2 == 0){
-              arr3[arr3index][0] = arr2[k];
-              arr3[arr3index][1] = arr2[k + 1];
-              arr3index++;
-            }
+  for(int v = 0; v < ListIndex; v++){
+      if(v % 2 == 0){
+          if 
         }
+    }        
+
+
+  for(int m = 0; m < arr3index; m++){
+    Serial.print(arr3[m][0]);
+      Serial.println(arr3[m][1]);
   }
 //for(int k = 0; k < ListIndex; k++) Serial.println(arr2[k]);
 
