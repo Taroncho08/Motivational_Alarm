@@ -1,13 +1,14 @@
 #include <EEPROM.h>
 #include "BluetoothSerial.h"
+#include <Wire.h>
+#include <RTClib.h>
 
+RTC_DS3231 rtc;
 BluetoothSerial BTSerial;
 
-int arr[50][2] = {{1, 20}, {20, 35}};
+int arr[50][2] = {{22, 48}, {22, 50}};
 String l;
 
-int arr3[20][2] = {};
-int arr3index = 0;
 int arr2[20] = {}; 
 int ListIndex = 0;
 char x;
@@ -17,12 +18,17 @@ void setup() {
   pinMode(13, OUTPUT);
   BTSerial.begin("Motivational Alarm");
   EEPROM.put(1, arr);
+  if (! rtc.begin()) {
+  Serial.println("Couldn't find RTC");
+  while (1);
+  }
   
   
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  DateTime now = rtc.now();
   if(BTSerial.available()){
     x = BTSerial.read();
     l += String(x);
@@ -31,10 +37,10 @@ void loop() {
     if (x == 'g'){
         
        
-        for(int i = 0; i<2; i++){
-          if(arr[i][0] != -1 and arr[i][1] != -1){
-          BTSerial.print(String(arr[i][0]) + ":" + String(arr[i][1]));
-          delay(1000);
+        for(int i = 0; i<ListIndex; i++){
+          if(i % 2 == 0){
+          BTSerial.print(String(arr2[i]) + ":" + String(arr2[i+1]));
+          delay(100);
           }
           //BTSerial.print(arr[i][1]);    
     }
@@ -56,15 +62,14 @@ void loop() {
   
   for(int v = 0; v < ListIndex; v++){
       if(v % 2 == 0){
-          if 
+          if (now.hour() == arr2[v] and now.minute() == arr2[v+1]){
+              Serial.println("Ve kac agera");
+            }
         }
     }        
 
 
-  for(int m = 0; m < arr3index; m++){
-    Serial.print(arr3[m][0]);
-      Serial.println(arr3[m][1]);
-  }
+
 //for(int k = 0; k < ListIndex; k++) Serial.println(arr2[k]);
 
 }
