@@ -1,27 +1,30 @@
 #include <EEPROM.h>
 #include <GyverTM1637.h>
 #include <GyverEncoder.h>
-#include <iarduino_RTC.h>
+#include <RTClib.h>
+#include "BluetoothSerial.h"
+#include <Wire.h>
 
 #define CLK 4
 #define DIO 5
 
 
+bool istime = false;
 int clickCount = 0;
 int ListIndex = 0;
 int hrs;
 int mins;
-int alarmList[50][2];
+int alarmList[50];
 int testVal = 0;
 uint32_t tmr;
 int address = 0;
 
 
 
-
-iarduino_RTC time(RTC_DS1302, 8,6,7);
+RTC_DS3231 rtc;
 GyverTM1637 disp(CLK, DIO);
 Encoder enc(11, 10, 9);
+BluetoothSerial BTSerial;
 
 
 bool flag = true;
@@ -30,11 +33,16 @@ void setup() {
    
   disp.clear();
   disp.brightness(7);
-  time.begin();
   disp.point(1);
   enc.setType(TYPE2);
   enc.setFastTimeout(50);
-   
+  BTSerial.begin("Motivational Alarm");
+
+    if (! rtc.begin()) {
+  Serial.println("Couldn't find RTC");
+  while (1);
+  }
+
 
   EEPROM.get(0, testVal);
   if (testVal == 1){
@@ -45,10 +53,38 @@ void setup() {
  
 }
 void loop(){
+  DateTime now = rtc.now();
   enc.tick();
    
   disp.point(flag);
-  time.gettime("d-m-Y, H:i:s, D");
+  
+
+  if(BTSerial.available()){
+    x = BTSerial.read();
+
+    
+    
+    if (x == 'g'){
+        
+       
+        for(int i = 0; i<ListIndex; i++){
+          if(i % 2 == 0){
+          BTSerial.print(String(arr2[i]) + ":" + String(arr2[i+1]));
+          delay(100);
+          }
+          //BTSerial.print(arr[i][1]);    
+    }
+      }
+   
+    
+    else{
+        
+        arr2[ListIndex] = x;
+        ListIndex++;
+
+      }
+      
+  }
 
 
   if (enc.isClick()){
@@ -89,12 +125,12 @@ void loop(){
       if (mins < 0)mins = 59;
     }
    else if (clickCount == 3){
-      alarmList[ListIndex][0] = hrs;
-      alarmList[ListIndex][1] = mins;
-      ListIndex++;
+      alarmList[ListIndex] = hrs;
+      alarmList[ListIndex + 1] = mins;
+      ListIndex+=2;
       mins = 0;
       hrs - 0;
-      testVal = 1;
+      testVal = 1; 
       EEPROM.put(0, testVal);
       EEPROM.put(1, alarmList);
       EEPROM.put(2, ListIndex);
@@ -115,17 +151,29 @@ void loop(){
 
  
         
-    for(int i = 0; i<ListIndex; i++){
-      Serial.print(alarmList[i][0]);
-      Serial.println(alarmList[i][1]);
-        if (time.Hours == alarmList[i][0] and time.minutes == alarmList[i][1]){
-            Serial.println("Be kac");
-          }
-         
-      }
-//
+    
+    for(int v = 0; v < ListIndex; v++){
+      if(v % 2 == 0){
+          if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1]){
+              Serial.println("Ve kac agera");
+              istime = true;
+            }
+           else{
+              istime = false;
+            }
+        }
+      
+    }        
+
+if (istime == false){    
+  Serial.print(now.hour(), DEC);    // Час
+  Serial.print(':');
+  Serial.println(now.minute(), DEC);
+}
+
+
 //Serial.println(testVal);
-Serial.println(ListIndex);
+//Serial.println(ListIndex);
 
     
     

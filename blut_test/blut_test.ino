@@ -6,7 +6,7 @@
 RTC_DS3231 rtc;
 BluetoothSerial BTSerial;
 
-int arr[50][2] = {{22, 48}, {22, 50}};
+bool istime = false;
 String l;
 
 int arr2[20] = {}; 
@@ -17,7 +17,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(13, OUTPUT);
   BTSerial.begin("Motivational Alarm");
-  EEPROM.put(1, arr);
+
   if (! rtc.begin()) {
   Serial.println("Couldn't find RTC");
   while (1);
@@ -31,7 +31,7 @@ void loop() {
   DateTime now = rtc.now();
   if(BTSerial.available()){
     x = BTSerial.read();
-    l += String(x);
+
     
     
     if (x == 'g'){
@@ -45,11 +45,7 @@ void loop() {
           //BTSerial.print(arr[i][1]);    
     }
       }
-    else if(x == 'c'){
-        for (int i = 0; i < EEPROM.length(); i++) EEPROM.write(i, 255);
-        EEPROM.get(1, arr);
-
-      }
+   
     
     else{
         
@@ -64,10 +60,20 @@ void loop() {
       if(v % 2 == 0){
           if (now.hour() == arr2[v] and now.minute() == arr2[v+1]){
               Serial.println("Ve kac agera");
+              istime = true;
+            }
+           else{
+              istime = false;
             }
         }
+      
     }        
 
+if (istime == false){    
+  Serial.print(now.hour(), DEC);    // Час
+  Serial.print(':');
+  Serial.println(now.minute(), DEC);
+}
 
 
 //for(int k = 0; k < ListIndex; k++) Serial.println(arr2[k]);

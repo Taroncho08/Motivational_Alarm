@@ -9,7 +9,7 @@ void setup() {
   Serial.println("Couldn't find RTC");
   while (1);
   }
-  
+//  rtc.adjust(DateTime(2022, 12, 12, 16, 11, 0));
   
 }
 
