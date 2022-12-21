@@ -33,7 +33,7 @@ BluetoothSerial BTSerial;
 bool flag = true;
 void setup() {
   Serial.begin(9600);
-   
+  EEPROM.begin(4096);
   disp.clear();
   disp.brightness(7);
   disp.point(1);
@@ -49,11 +49,11 @@ void setup() {
 
   EEPROM.get(0, testVal);
   if (testVal == 1){
-    EEPROM.get(1, alarmList);
-    EEPROM.get(2, ListIndex);
+    EEPROM.get(2, alarmList);
+    EEPROM.get(4, ListIndex);
   }
 
- 
+
 }
 void loop(){
   DateTime now = rtc.now();
@@ -94,6 +94,11 @@ void loop(){
       if (isInList == false){
         alarmList[ListIndex] = testArr[0];
         alarmList[ListIndex + 1] = testArr[1];
+        testVal = 1;
+        EEPROM.put(0, testVal);
+        EEPROM.put(2, alarmList);
+        EEPROM.put(4, ListIndex);
+        EEPROM.commit();
         ListIndex+=2;
       }
       else{
@@ -158,14 +163,15 @@ void loop(){
       hrs - 0;
       testVal = 1; 
       EEPROM.put(0, testVal);
-      EEPROM.put(1, alarmList);
-      EEPROM.put(2, ListIndex);
+      EEPROM.put(2, alarmList);
+      EEPROM.put(4, ListIndex);
+      EEPROM.commit();
+
       clickCount = 0;
     }
     }
    else{
         disp.displayClock(now.hour(), now.minute());
-        
     }
   
 
@@ -192,19 +198,19 @@ void loop(){
       
     }        
 
-//if (istime == false){    
+// if (istime == false){    
 //  Serial.print(now.hour(), DEC);    // Час
 //  Serial.print(':');
 //  Serial.println(now.minute(), DEC);
-//}
+// }
 
 
 //Serial.println(testVal);
 //Serial.println(ListIndex);
 
-for(int r = 0; r < ListIndex; r++){
-    Serial.println(alarmList[r]);
-  }
+  for(int r = 0; r < ListIndex; r++){
+      Serial.println(alarmList[r]);
+    }
     
 
   
