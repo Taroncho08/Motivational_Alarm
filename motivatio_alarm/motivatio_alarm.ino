@@ -21,6 +21,8 @@ int address = 0;
 bool isInList = false;
 int testArr[2];
 int testArrIndex = 0;
+bool del = false;
+bool change = false;
 
 
 
@@ -73,44 +75,70 @@ void loop(){
           BTSerial.print(String(alarmList[i]) + ":" + String(alarmList[i+1]));
           delay(100);
           }
-  
-    }
+        }
       }
    
-    
-    else{
-      testArr[testArrIndex] = x;
-      testArrIndex++;
-      if (testArrIndex == 2){
-        for(int d = 1; d < ListIndex; d++){
-          if(d % 2 != 0){
-              if (testArr[0] == alarmList[d] and testArr[1] == alarmList[d+1]){
-                  isInList = true;
-                }
-              }
-        }
-        
+    else if(x == 'd'){
+      del = true;    
+      }
+
+    else if(x == 'e'){
+        del = false;
+        change = false;
+      }
       
-        if (isInList == false){
-          alarmList[ListIndex] = testArr[0];
-          alarmList[ListIndex + 1] = testArr[1];
-          ListIndex+=2;
-          testVal = 1;
-          EEPROM.put(0, testVal);
-          EEPROM.put(2, alarmList);
-          EEPROM.put(4, ListIndex);
-          EEPROM.commit();
-          
-          
+    else{
+      if (del == true){
+          testArr[testArrIndex] = x;
+          testArrIndex++;
+          if (testArrIndex == 2){
+            for(int r = 1; r < ListIndex; r++){
+                if (r % 2 != 0){
+                  if (testArr[0] == alarmList[d] and testArr[1] == alarmList[d+1]){
+                    for (int w = r+2; w < ListIndex; w++){
+                        
+                      }
+                  }
+                      
+              }
+                }
+            }
         }
-        else{
-            isInList == false;
+      if (del == false and change == false){
+        testArr[testArrIndex] = x;
+        testArrIndex++;
+        if (testArrIndex == 2){
+          for(int d = 1; d < ListIndex; d++){
+            if(d % 2 != 0){
+                if (testArr[0] == alarmList[d] and testArr[1] == alarmList[d+1]){
+                    isInList = true;
+                  }
+                }
           }
-          testArrIndex = 0;
+          
+        
+          if (isInList == false){
+            alarmList[ListIndex] = testArr[0];
+            alarmList[ListIndex + 1] = testArr[1];
+            ListIndex+=2;
+            testVal = 1;
+            EEPROM.put(0, testVal);
+            EEPROM.put(2, alarmList);
+            EEPROM.put(4, ListIndex);
+            EEPROM.commit();
+            
+            
+          }
+          else{
+              isInList == false;
+            }
+            testArrIndex = 0;
+        }
       }
     }
       
   }
+  
 
 
   if (enc.isClick()){
