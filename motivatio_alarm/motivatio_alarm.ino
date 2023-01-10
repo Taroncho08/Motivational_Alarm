@@ -48,8 +48,11 @@ void setup() {
   Serial.println("Couldn't find RTC");
   while (1);
   }
+for (int i = 0; i < 4090; i++) {
+ EEPROM.write(i, 0);
+ }
+EEPROM.commit();
 
-  
 
   EEPROM.get(0, testVal);
   if (testVal == 1){
@@ -94,15 +97,19 @@ void loop(){
           if (testArrIndex == 2){
             for(int r = 1; r < ListIndex; r++){
                 if (r % 2 != 0){
-                  if (testArr[0] == alarmList[d] and testArr[1] == alarmList[d+1]){
+                  if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
                     for (int w = r+2; w < ListIndex; w++){
-                        
+                        alarmList[w-2] = alarmList[w];
                       }
+                    del = false;
+                    ListIndex-=2;
+                    break;
                   }
                       
               }
                 }
             }
+            
         }
       if (del == false and change == false){
         testArr[testArrIndex] = x;
@@ -243,6 +250,7 @@ void loop(){
       Serial.println(alarmList[r]);
     }
     Serial.println("ListIndex" + String(ListIndex));
+    Serial.println(del);
 
   
   
