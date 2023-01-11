@@ -82,7 +82,8 @@ void loop(){
       }
    
     else if(x == 'd'){
-      del = true;    
+      del = true; 
+      Serial.println("dddd");   
       }
 
     else if(x == 'e'){
@@ -98,9 +99,15 @@ void loop(){
             for(int r = 1; r < ListIndex; r++){
                 if (r % 2 != 0){
                   if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
-                    for (int w = r+2; w < ListIndex; w++){
-                        alarmList[w-2] = alarmList[w];
-                      }
+                    if (r != ListIndex - 2){
+                      for (int w = r+2; w < ListIndex; w++){
+                          alarmList[w-2] = alarmList[w];
+                        }
+                    }
+                    else{
+                      alarmList[r] = 25;
+                      alarmList[r + 1] = 25;
+                    }
                     del = false;
                     ListIndex-=2;
                     break;
@@ -249,8 +256,9 @@ void loop(){
   for(int r = 1; r < ListIndex; r++){
       Serial.println(alarmList[r]);
     }
-    Serial.println("ListIndex" + String(ListIndex));
-    Serial.println(del);
+  Serial.println("ListIndex" + String(ListIndex));
+  
+  Serial.println(del);
 
   
   
