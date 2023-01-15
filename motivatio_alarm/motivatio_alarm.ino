@@ -83,12 +83,7 @@ void loop(){
    
     else if(x == 'd'){
       del = true; 
-      Serial.println("dddd");   
-      }
-
-    else if(x == 'e'){
-        del = false;
-        change = false;
+         
       }
       
     else{
@@ -99,22 +94,19 @@ void loop(){
             for(int r = 1; r < ListIndex; r++){
                 if (r % 2 != 0){
                   if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
-                    if (r != ListIndex - 2){
-                      for (int w = r+2; w < ListIndex; w++){
-                          alarmList[w-2] = alarmList[w];
+                      for (int w = r; w < ListIndex; w++){
+                          alarmList[w] = alarmList[w+2];
                         }
-                    }
-                    else{
-                      alarmList[r] = 25;
-                      alarmList[r + 1] = 25;
-                    }
-                    del = false;
+                    
+                   
                     ListIndex-=2;
                     break;
                   }
-                      
               }
+              
                 }
+                testArrIndex = 0;
+                del = false;
             }
             
         }
@@ -253,7 +245,7 @@ void loop(){
 //Serial.println(testVal);
 //Serial.println(ListIndex);
 
-  for(int r = 1; r < ListIndex; r++){
+  for(int r = 1; r < 49; r++){
       Serial.println(alarmList[r]);
     }
   Serial.println("ListIndex" + String(ListIndex));
