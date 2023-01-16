@@ -71,7 +71,7 @@ void loop(){
   
   if(BTSerial.available()){
     x = BTSerial.read();
- 
+ //
     if (x == 'g'){
         for(int i = 1; i<ListIndex; i++){
           if(i % 2 != 0){
@@ -90,10 +90,12 @@ void loop(){
       if (del == true){
           testArr[testArrIndex] = x;
           testArrIndex++;
+
           if (testArrIndex == 2){
             for(int r = 1; r < ListIndex; r++){
                 if (r % 2 != 0){
                   if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
+
                       for (int w = r; w < ListIndex; w++){
                           alarmList[w] = alarmList[w+2];
                         }
@@ -110,7 +112,9 @@ void loop(){
             }
             
         }
-      if (del == false and change == false){
+
+      else if (del == false and change == false){
+        Serial.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         testArr[testArrIndex] = x;
         testArrIndex++;
         if (testArrIndex == 2){
@@ -249,8 +253,8 @@ void loop(){
       Serial.println(alarmList[r]);
     }
   Serial.println("ListIndex" + String(ListIndex));
-  
-  Serial.println(del);
+  Serial.println("testArrIndex" + String(testArrIndex));
+  Serial.println("del" + String(del));
 
   
   
