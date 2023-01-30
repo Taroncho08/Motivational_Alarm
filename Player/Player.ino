@@ -92,6 +92,7 @@ void printDetail(uint8_t type, int value){
       Serial.print(F("Number:"));
       Serial.print(value);
       Serial.println(F(" Play Finished!"));
+      myDFPlayer.play(random(1, 4));
       break;
     case DFPlayerError:
       Serial.print(F("DFPlayerError:"));
