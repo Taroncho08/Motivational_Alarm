@@ -1,13 +1,22 @@
-int time = 0;
+#define BUTTON_PIN 14 // GIOP21 pin connected to button
+
+// Variables will change:
+int lastState = HIGH; // the previous state from the input pin
+int currentState;     // the current reading from the input pin
 
 void setup() {
-  // put your setup code here, to run once:
-  pinMode(19, INPUT);
-  Serial.begin(115200);
+  Serial.begin(9600);
+  // initialize the pushbutton pin as an pull-up input
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  time = digitalRead(19);
-  Serial.println(time);
+  // read the state of the switch/button:
+  currentState = digitalRead(BUTTON_PIN);
+
+  if(lastState == LOW && currentState == HIGH)
+    Serial.println("The state changed from LOW to HIGH");
+
+  // save the last state
+  lastState = currentState;
 }
