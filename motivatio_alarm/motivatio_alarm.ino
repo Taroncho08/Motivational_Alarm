@@ -25,6 +25,8 @@ int testArr[2];
 int testArrIndex = 0;
 bool del = false;
 bool change = false;
+int key = 1;
+int t;
 
 
 
@@ -174,7 +176,23 @@ void loop(){
     }
       
   }
+    //1 = music off
+    //0 = music on
+    for(int v = 1; v < ListIndex; v++){
+      if(v % 2 != 0){
+          if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key = 1 and now.minute() != t){
+               myDFPlayer.play(random(1, 4));
+              key = 0;
+              t = now.minute();
+          }
+          
+      }
+    } 
   
+   if (digitalRead(14) == HIGH){
+     myDFPlayer.stop();
+     key = 1;
+   }
 
 
   if (enc.isClick()){
