@@ -7,8 +7,8 @@
 #include <Wire.h>
 #include <GyverTM1637.h>
 
-#define CLK 4
-#define DIO 5
+#define CLK 2
+#define DIO 4
 
 char x;
 bool istime = false;
@@ -36,7 +36,7 @@ Encoder enc(35, 34, 32);
 BluetoothSerial BTSerial;
 DFRobotDFPlayerMini myDFPlayer;
 void printDetail(uint8_t type, int value);
-
+TaskHandle_t Task1;
 
 bool flag = true;
 void setup() {
@@ -59,7 +59,6 @@ void setup() {
   Serial.println(F("DFPlayer Mini online."));
   
   myDFPlayer.volume(30);
-  myDFPlayer.play(1);
 
   EEPROM.begin(4096);
   disp.clear();
@@ -85,6 +84,17 @@ EEPROM.commit();
     EEPROM.get(2, alarmList);
     EEPROM.get(4, ListIndex);
   }
+  
+  rtc.adjust(DateTime(2023, 02, 11, 22, 41, 0));
+  xTaskCreatePinnedToCore(
+                    Sound,   /* Task function. */
+                    "Task1",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &Task1,      /* Task handle to keep track of created task */
+                    0);          /* pin task to core 0 */                  
+             delay(500); 
 }
 
 
@@ -178,16 +188,7 @@ void loop(){
   }
     //1 = music off
     //0 = music on
-    for(int v = 1; v < ListIndex; v++){
-      if(v % 2 != 0){
-          if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key = 1 and now.minute() != t){
-               myDFPlayer.play(random(1, 4));
-              key = 0;
-              t = now.minute();
-          }
-          
-      }
-    } 
+    
   
    if (digitalRead(14) == HIGH){
      myDFPlayer.stop();
@@ -279,11 +280,11 @@ void loop(){
       
     }        
 
-// if (istime == false){    
-//  Serial.print(now.hour(), DEC);    // Час
-//  Serial.print(':');
-//  Serial.println(now.minute(), DEC);
-// }
+ if (istime == false){    
+  Serial.print(now.hour(), DEC);    // Час
+  Serial.print(':');
+  Serial.println(now.minute(), DEC);
+ }
 
 
 //Serial.println(testVal);
@@ -365,3 +366,20 @@ void printDetail(uint8_t type, int value){
   
 }
 
+void Sound(void * pvParameters){
+  for(;;){
+    for(int v = 1; v < ListIndex; v++){
+        if(v % 2 != 0){
+            if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key == 1 and now.minute() != t){
+                key = 0;
+                t = now.minute();  
+                break;
+            } 
+        }
+      } 
+      if(key==0){
+          break;
+        }
+  }
+    myDFPlayer.play(random(1, 4));
+  }
