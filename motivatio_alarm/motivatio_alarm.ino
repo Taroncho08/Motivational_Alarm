@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "DFRobotDFPlayerMini.h"
+#include <DFPlayerMini_Fast.h>
 #include <EEPROM.h>
 #include <GyverEncoder.h>
 #include <RTClib.h>
@@ -27,38 +27,29 @@ bool del = false;
 bool change = false;
 int key = 1;
 int t;
-
+bool flag = true;
 
 
 RTC_DS3231 rtc;
 GyverTM1637 disp(CLK, DIO);
 Encoder enc(35, 34, 32);
 BluetoothSerial BTSerial;
-DFRobotDFPlayerMini myDFPlayer;
-void printDetail(uint8_t type, int value);
-TaskHandle_t Task1;
+DFPlayerMini_Fast myMP3;
 
-bool flag = true;
+
+
 void setup() {
-
-  Serial2.begin(9600);
   Serial.begin(115200); 
 
-  Serial.println();
-  Serial.println(F("DFRobot DFPlayer Mini Demo"));
-  Serial.println(F("Initializing DFPlayer ... (May take 3~5 seconds)"));
+  #if !defined(UBRR1H)
+  Serial2.begin(9600);
+  myMP3.begin(Serial2, true);
+  #else
+    Serial1.begin(9600);
+    myMP3.begin(Serial1, true);
+  #endif
   
-  if (!myDFPlayer.begin(Serial2)) {  //Use softwareSerial to communicate with mp3.
-    Serial.println(F("Unable to begin:"));
-    Serial.println(F("1.Please recheck the connection!"));
-    Serial.println(F("2.Please insert the SD card!"));
-    while(true){
-      delay(0); // Code to compatible with ESP8266 watch dog.
-    }
-  }
-  Serial.println(F("DFPlayer Mini online."));
-  
-  myDFPlayer.volume(30);
+  myMP3.volume(30);
 
   EEPROM.begin(4096);
   disp.clear();
@@ -85,16 +76,8 @@ EEPROM.commit();
     EEPROM.get(4, ListIndex);
   }
   
-  rtc.adjust(DateTime(2023, 02, 11, 22, 41, 0));
-  xTaskCreatePinnedToCore(
-                    Sound,   /* Task function. */
-                    "Task1",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &Task1,      /* Task handle to keep track of created task */
-                    0);          /* pin task to core 0 */                  
-             delay(500); 
+  rtc.adjust(DateTime(2023, 02, 14, 23, 55, 0));
+
 }
 
 
@@ -103,14 +86,10 @@ void loop(){
   DateTime now = rtc.now();
   enc.tick();   
   disp.point(flag);
-
-  if (myDFPlayer.available()) {
-    printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-  }
   
   if(BTSerial.available()){
     x = BTSerial.read();
- //
+
     if (x == 'g'){
         for(int i = 1; i<ListIndex; i++){
           if(i % 2 != 0){
@@ -188,14 +167,33 @@ void loop(){
   }
     //1 = music off
     //0 = music on
+        for(int v = 1; v < ListIndex; v++){
+          if(v % 2 != 0){
+              if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key == 1 and now.minute() != t){
+                  t = now.minute();
+                  key = 0;
+                  
+                  
+              } 
+          }
+        } 
+
+        if(key == 0){
+            sound();
+          }
     
+  Serial.print("pin");
+  Serial.println(digitalRead(14));
+
   
-   if (digitalRead(14) == HIGH){
-     myDFPlayer.stop();
+   if (digitalRead(14) == 0){
+     myMP3.stop();
      key = 1;
    }
 
-
+  Serial.print("key");
+  Serial.println(key);
+  
   if (enc.isClick()){
     clickCount++;
     if (clickCount > 3){
@@ -303,83 +301,8 @@ void loop(){
   
 }
 
-void printDetail(uint8_t type, int value){
-  switch (type) {
-    case TimeOut:
-      Serial.println(F("Time Out!"));
-      break;
-    case WrongStack:
-      Serial.println(F("Stack Wrong!"));
-      break;
-    case DFPlayerCardInserted:
-      Serial.println(F("Card Inserted!"));
-      break;
-    case DFPlayerCardRemoved:
-      Serial.println(F("Card Removed!"));
-      break;
-    case DFPlayerCardOnline:
-      Serial.println(F("Card Online!"));
-      break;
-    case DFPlayerUSBInserted:
-      Serial.println("USB Inserted!");
-      break;
-    case DFPlayerUSBRemoved:
-      Serial.println("USB Removed!");
-      break;
-    case DFPlayerPlayFinished:
-      Serial.print(F("Number:"));
-      Serial.print(value);
-      Serial.println(F(" Play Finished!"));
-      myDFPlayer.play(random(1, 4));
-      break;
-    case DFPlayerError:
-      Serial.print(F("DFPlayerError:"));
-      switch (value) {
-        case Busy:
-          Serial.println(F("Card not found"));
-          break;
-        case Sleeping:
-          Serial.println(F("Sleeping"));
-          break;
-        case SerialWrongStack:
-          Serial.println(F("Get Wrong Stack"));
-          break;
-        case CheckSumNotMatch:
-          Serial.println(F("Check Sum Not Match"));
-          break;
-        case FileIndexOut:
-          Serial.println(F("File Index Out of Bound"));
-          break;
-        case FileMismatch:
-          Serial.println(F("Cannot Find File"));
-          break;
-        case Advertise:
-          Serial.println(F("In Advertise"));
-          break;
-        default:
-          break;
-      }
-      break;
-    default:
-      break;
-  }
-  
-}
-
-void Sound(void * pvParameters){
-  for(;;){
-    for(int v = 1; v < ListIndex; v++){
-        if(v % 2 != 0){
-            if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key == 1 and now.minute() != t){
-                key = 0;
-                t = now.minute();  
-                break;
-            } 
-        }
-      } 
-      if(key==0){
-          break;
-        }
-  }
-    myDFPlayer.play(random(1, 4));
+void sound(){
+    if(!myMP3.isPlaying()){
+      myMP3.randomAll();
+    }
   }

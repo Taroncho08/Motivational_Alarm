@@ -48,7 +48,7 @@ void setup()
   
   myDFPlayer.volume(30);  //Set volume value. From 0 to 30
    //Play the first mp3
-  myDFPlayer.play(1); 
+  //myDFPlayer.play(1); 
 }
 
 void loop()
@@ -60,7 +60,7 @@ void loop()
 //    myDFPlayer.next();  //Play next mp3 every 3 second.
 //  }
   
-  
+  snd();
 
   if (myDFPlayer.available()) {
     printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
@@ -129,3 +129,7 @@ void printDetail(uint8_t type, int value){
   }
   
 }
+
+void snd(){
+    myDFPlayer.loop(1);
+  }
