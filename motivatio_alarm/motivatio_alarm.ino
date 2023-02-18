@@ -23,11 +23,14 @@ int address = 0;
 bool isInList = false;
 int testArr[2];
 int testArrIndex = 0;
+int changeArr[2];
+int changeArrIndex = 0;
 bool del = false;
 bool change = false;
 int key = 1;
 int t;
 bool flag = true;
+
 
 
 RTC_DS3231 rtc;
@@ -102,6 +105,10 @@ void loop(){
     else if(x == 'd'){
       del = true;  
       }
+
+    else if(x == 'c'){
+        change = true;
+      }
       
     else{
       if (del == true){
@@ -129,6 +136,32 @@ void loop(){
             }
             
         }
+
+      else if(change == true){
+        if(testArrIndex != 2){
+          testArr[testArrIndex] = x;
+          testArrIndex++;
+        }
+          else if (testArrIndex == 2){
+              changeArr[changeArrIndex] = x;
+              changeArrIndex++;
+              if(changeArrIndex == 2){
+                  for(int v = 1; v < ListIndex; v++){
+                    if (v % 2 != 0){
+                      if (testArr[0] == alarmList[v] and testArr[1] == alarmList[v+1]){
+                        alarmList[v] = changeArr[0];
+                        alarmList[v+1] = changeArr[1];
+                      }
+                    }
+                  }
+                  testArrIndex = 0;
+                  change = false;
+                  changeArrIndex = 0;
+                  }
+                  
+                }
+            }
+    
 
       else if (del == false and change == false){
         Serial.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
@@ -288,12 +321,18 @@ void loop(){
 //Serial.println(testVal);
 //Serial.println(ListIndex);
 
-  for(int r = 1; r < 49; r++){
+  for(int r = 1; r < ListIndex; r++){
       Serial.println(alarmList[r]);
     }
-  Serial.println("ListIndex" + String(ListIndex));
+    Serial.print(changeArr[0]);
+    Serial.println(changeArr[1]);
+    Serial.print(testArr[0]);
+    Serial.println(testArr[1]);
+//  Serial.println("ListIndex" + String(ListIndex));
   Serial.println("testArrIndex" + String(testArrIndex));
-  Serial.println("del" + String(del));
+//  Serial.println("del" + String(del));
+//  Serial.println("changeInd" + String(changeArrIndex));
+//  Serial.println("change" + String(change));
 
   
   
