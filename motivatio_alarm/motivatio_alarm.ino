@@ -16,7 +16,7 @@ int clickCount = 0;
 int ListIndex = 2;
 int hrs;
 int mins;
-int alarmList[50] = {-1};
+int alarmList[50];
 int testVal = 0;
 uint32_t tmr;
 int address = 0;
@@ -67,10 +67,10 @@ void setup() {
   Serial.println("Couldn't find RTC");
   while (1);
   }
-//for (int i = 0; i < 4090; i++) {
+// for (int i = 0; i < 4090; i++) {
 // EEPROM.put(i, 0);
 // }
-//EEPROM.commit();
+// EEPROM.commit();
 
 
   EEPROM.get(0, testVal);
@@ -80,7 +80,7 @@ void setup() {
     EEPROM.get(12, ListIndex);
   }
   
-  rtc.adjust(DateTime(2023, 02, 14, 23, 55, 0));
+  rtc.adjust(DateTime(2023, 2, 14, 23, 55, 0));
 
 }
 
@@ -118,7 +118,7 @@ void loop(){
 
           if (testArrIndex == 2){
             for(int r = 1; r < ListIndex; r++){
-                if (r % 2 != 0){
+                if (r % 2 == 0){
                   if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
 
                       for (int w = r; w < ListIndex; w++){
@@ -208,6 +208,11 @@ void loop(){
             
             EEPROM.put(0, testVal);
             EEPROM.put(6, alarmList);
+              int abcd[16];
+  EEPROM.get(6, abcd);
+  for(int j = 0; j <= 16; j++){
+    Serial.println(abcd[j]);
+  }
             EEPROM.put(12, ListIndex);
             EEPROM.commit();
             
@@ -335,19 +340,23 @@ void loop(){
       
     }        
 
- if (istime == false){    
-  Serial.print(now.hour(), DEC);    // Час
-  Serial.print(':');
-  Serial.println(now.minute(), DEC);
- }
-
+//  if (istime == false){    
+//   Serial.print(now.hour(), DEC);    // Час
+//   Serial.print(':');
+//   Serial.println(now.minute(), DEC);
+//  }
 
 //Serial.println(testVal);
 //Serial.println(ListIndex);
 
-  for(int r = 2; r < ListIndex; r++){
-      Serial.println(alarmList[r]);
-    }
+  // for(int r = 2; r < ListIndex; r++){
+  //     Serial.println(alarmList[r]);
+  //   }
+  // int abcd[16];
+  // EEPROM.get(6, abcd);
+  // for(int j = 0; j <= 16; j++){
+  //   Serial.println(abcd[j]);
+  // }
 //    Serial.print(changeArr[0]);
 //    Serial.println(changeArr[1]);
 //    Serial.print(testArr[0]);
