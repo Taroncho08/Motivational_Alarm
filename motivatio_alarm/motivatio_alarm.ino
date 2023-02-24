@@ -13,7 +13,7 @@
 char x;
 bool istime = false;
 int clickCount = 0;
-int ListIndex = 2;
+int ListIndex = 1;
 int hrs;
 int mins;
 int alarmList[50];
@@ -30,6 +30,7 @@ bool change = false;
 int key = 1;
 int t;
 bool flag = true;
+int changefor = 1;
 
 
 
@@ -77,7 +78,7 @@ void setup() {
   if (testVal == 1){
     Serial.println(111);
     EEPROM.get(6, alarmList);
-    EEPROM.get(12, ListIndex);
+    EEPROM.get(4, ListIndex);
   }
   
   rtc.adjust(DateTime(2023, 2, 14, 23, 55, 0));
@@ -95,8 +96,8 @@ void loop(){
     x = BTSerial.read();
 
     if (x == 'g'){
-        for(int i = 2; i<ListIndex; i++){
-          if(i % 2 == 0){
+        for(int i = 1; i<ListIndex; i++){
+          if(i % 2 !=  0){
           BTSerial.print(String(alarmList[i]) + ":" + String(alarmList[i+1]));
           delay(100);
           }
@@ -118,7 +119,7 @@ void loop(){
 
           if (testArrIndex == 2){
             for(int r = 1; r < ListIndex; r++){
-                if (r % 2 == 0){
+                if (r % 2 !=  0){
                   if (testArr[0] == alarmList[r] and testArr[1] == alarmList[r+1]){
 
                       for (int w = r; w < ListIndex; w++){
@@ -127,9 +128,12 @@ void loop(){
                     
                    
                     ListIndex-=2;
+                    if(ListIndex == 1){
+                        testVal = 0;
+                      }
                     EEPROM.put(0, testVal);
                     EEPROM.put(6, alarmList);
-                    EEPROM.put(12, ListIndex);
+                    EEPROM.put(4, ListIndex);
                     EEPROM.commit();
                     
                     break;
@@ -148,34 +152,49 @@ void loop(){
           testArr[testArrIndex] = x;
           testArrIndex++;
         }
+        
           else if (testArrIndex == 2){
               changeArr[changeArrIndex] = x;
               changeArrIndex++;
+
+              
               if(changeArrIndex == 2){
-                  for(int v = 2; v < ListIndex; v++){
-                    if (v % 2 == 0){
-                      if (testArr[0] == alarmList[v] and testArr[1] == alarmList[v+1]){
-                        for(int n = 2; n < ListIndex; n++){
+                  for(changefor = 1; changefor < ListIndex; changefor++){
+                    if (changefor % 2 !=  0){
+                      if (testArr[0] == alarmList[changefor] and testArr[1] == alarmList[changefor+1]){
+                        for(int n = 1; n < ListIndex; n++){
+                          if(n % 2 != 0){
                             if (changeArr[0] == alarmList[n] and changeArr[1] == alarmList[n+1]){
                               isInList = true;
+                              break;
                             }
                           }
+                        }
 
-                      }
-                    }
-                    if (isInList == false){
-                      alarmList[v] = changeArr[0];
-                      alarmList[v+1] = changeArr[1];
+                        if (isInList == false){  
+                      alarmList[changefor] = changeArr[0];            
+                      alarmList[changefor+1] = changeArr[1];
+                      
                       EEPROM.put(0, testVal);
                       EEPROM.put(6, alarmList);
-                      EEPROM.put(12, ListIndex);
+                      EEPROM.put(4, ListIndex);
                       EEPROM.commit();
-                      
-                    }
+
+                      break;
+
+                  }
                    else{
                       isInList = false;
+                      
                     }
-                  }
+
+                      }
+                    
+                      
+                    }
+                    
+                    }
+                    
                   
                   testArrIndex = 0;
                   change = false;
@@ -191,8 +210,8 @@ void loop(){
         testArr[testArrIndex] = x;
         testArrIndex++;
         if (testArrIndex == 2){
-          for(int d = 2; d < ListIndex; d++){
-            if(d % 2 == 0){
+          for(int d = 1; d < ListIndex; d++){
+            if(d % 2 !=  0){
                 if (testArr[0] == alarmList[d] and testArr[1] == alarmList[d+1]){
                     isInList = true;
                   }
@@ -208,12 +227,7 @@ void loop(){
             
             EEPROM.put(0, testVal);
             EEPROM.put(6, alarmList);
-              int abcd[16];
-  EEPROM.get(6, abcd);
-  for(int j = 0; j <= 16; j++){
-    Serial.println(abcd[j]);
-  }
-            EEPROM.put(12, ListIndex);
+            EEPROM.put(4, ListIndex);
             EEPROM.commit();
             
             
@@ -229,8 +243,8 @@ void loop(){
   }
     //1 = music off
     //0 = music on
-        for(int v = 2; v < ListIndex; v++){
-          if(v % 2 == 0){
+        for(int v = 1; v < ListIndex; v++){
+          if(v % 2 !=  0){
               if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1] and key == 1 and now.minute() != t){
                   t = now.minute();
                   key = 0;
@@ -243,18 +257,12 @@ void loop(){
         if(key == 0){
             sound();
           }
-    
-//  Serial.print("pin");
-//  Serial.println(digitalRead(14));
 
   
    if (digitalRead(14) == 0){
      myMP3.stop();
      key = 1;
    }
-
-//  Serial.print("key");
-//  Serial.println(key);
   
   if (enc.isClick()){
     clickCount++;
@@ -294,8 +302,8 @@ void loop(){
       if (mins < 0)mins = 59;
     }
    else if (clickCount == 3){
-    for(int c = 2; c < ListIndex; c++){
-      if(c % 2 == 0){
+    for(int c = 1; c < ListIndex; c++){
+      if(c % 2 !=  0){
           if (hrs == alarmList[c] and mins == alarmList[c+1]){
             clickCount = 0;
             }
@@ -310,7 +318,7 @@ void loop(){
       testVal = 1; 
       EEPROM.put(0, testVal);
       EEPROM.put(6, alarmList);
-      EEPROM.put(12, ListIndex);
+      EEPROM.put(4, ListIndex);
       EEPROM.commit();
 
       clickCount = 0;
@@ -331,8 +339,8 @@ void loop(){
  
         
     
-    for(int v = 2; v < ListIndex; v++){
-      if(v % 2 == 0){
+    for(int v = 1; v < ListIndex; v++){
+      if(v % 2 !=  0){
           if (now.hour() == alarmList[v] and now.minute() == alarmList[v+1]){
               istime = true;
             }
@@ -349,9 +357,10 @@ void loop(){
 //Serial.println(testVal);
 //Serial.println(ListIndex);
 
-  // for(int r = 2; r < ListIndex; r++){
-  //     Serial.println(alarmList[r]);
-  //   }
+   for(int r = 1; r < ListIndex; r++){
+       Serial.println(alarmList[r]);
+     }
+     Serial.println("chkpk");
   // int abcd[16];
   // EEPROM.get(6, abcd);
   // for(int j = 0; j <= 16; j++){
