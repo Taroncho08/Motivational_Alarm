@@ -81,7 +81,6 @@ void setup() {
     EEPROM.get(4, ListIndex);
   }
   
-  rtc.adjust(DateTime(2023, 2, 14, 23, 55, 0));
 
 }
 
@@ -259,7 +258,7 @@ void loop(){
           }
 
   
-   if (digitalRead(14) == 0){
+   if (digitalRead(14) == 0 or digitalRead(12) == 0 or (digitalRead(14) == 0 and digitalRead(12) == 0)){
      myMP3.stop();
      key = 1;
    }
@@ -348,33 +347,13 @@ void loop(){
       
     }        
 
-//  if (istime == false){    
-//   Serial.print(now.hour(), DEC);    // Час
-//   Serial.print(':');
-//   Serial.println(now.minute(), DEC);
-//  }
 
-//Serial.println(testVal);
-//Serial.println(ListIndex);
 
    for(int r = 1; r < ListIndex; r++){
        Serial.println(alarmList[r]);
      }
      Serial.println("chkpk");
-  // int abcd[16];
-  // EEPROM.get(6, abcd);
-  // for(int j = 0; j <= 16; j++){
-  //   Serial.println(abcd[j]);
-  // }
-//    Serial.print(changeArr[0]);
-//    Serial.println(changeArr[1]);
-//    Serial.print(testArr[0]);
-//    Serial.println(testArr[1]);
-//  Serial.println("ListIndex" + String(ListIndex));
-//  Serial.println("testArrIndex" + String(testArrIndex));
-//  Serial.println("del" + String(del));
-//  Serial.println("changeInd" + String(changeArrIndex));
-//  Serial.println("change" + String(change));
+
 
   
   
