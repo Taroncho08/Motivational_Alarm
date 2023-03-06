@@ -81,7 +81,7 @@ void setup() {
     EEPROM.get(4, ListIndex);
   }
   
-
+rtc.adjust(DateTime(2023, 3, 6, 20, 13, 0));
 }
 
 
@@ -258,7 +258,7 @@ void loop(){
           }
 
   
-   if (digitalRead(14) == 0 or digitalRead(12) == 0 or (digitalRead(14) == 0 and digitalRead(12) == 0)){
+   if (digitalRead(14) == 0){
      myMP3.stop();
      key = 1;
    }
