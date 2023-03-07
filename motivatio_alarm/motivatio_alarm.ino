@@ -274,11 +274,11 @@ void loop(){
       
       disp.displayClock(hrs, now.minute());
       if (enc.isRight()){
-          hrs++;
+          hrs--;
         }
       
       if(enc.isLeft()){
-          hrs--;
+          hrs++;
         }
       
       if (hrs > 23)hrs = 0;
@@ -288,13 +288,13 @@ void loop(){
       
       disp.displayClock(hrs, mins);
       if (enc.isRight()){
-          mins++;
+          mins--;
         }
         
      
         
       else if(enc.isLeft()){
-          mins--;
+          mins++;
         }
      
       if (mins > 59)mins = 0;
