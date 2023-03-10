@@ -79,9 +79,10 @@ void setup() {
     Serial.println(111);
     EEPROM.get(6, alarmList);
     EEPROM.get(4, ListIndex);
+    
   }
-  
-rtc.adjust(DateTime(2023, 3, 6, 20, 13, 0));
+  pinMode(12, INPUT_PULLUP);
+//  rtc.adjust(DateTime(2023, 3, 10, 8, 1, 0));
 }
 
 
@@ -258,7 +259,7 @@ void loop(){
           }
 
   
-   if (digitalRead(14) == 0){
+   if (digitalRead(14) == 0 or digitalRead(12) == 0 or (digitalRead(14) == 0 and digitalRead(12))){
      myMP3.stop();
      key = 1;
    }

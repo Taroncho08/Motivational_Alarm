@@ -10,7 +10,7 @@ void setup() {
 }
 
 void loop() {
-if (digitalRead(14) == 0){
+if (digitalRead(12) == 1){
      Serial.println("aaaaaaaaaa");
    }
 }
