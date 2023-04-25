@@ -82,7 +82,7 @@ void setup() {
     
   }
   pinMode(12, INPUT_PULLUP);
-//  rtc.adjust(DateTime(2023, 3, 10, 8, 1, 0));
+//  rtc.adjust(DateTime(2023, 3, 10, 23, 34, 30));
 }
 
 
